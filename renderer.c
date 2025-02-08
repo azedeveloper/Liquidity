@@ -26,6 +26,7 @@ int isSimulationRunning = 0;
 int prev_pradius = DEFAULT_PRADIUS;
 int prev_rectWidth = 600;
 int prev_rectHeight = 600;
+float spacing = 5;
 
 struct color {
     int r;
@@ -70,7 +71,7 @@ void initParticles() {
     int particlesPerRow = (int)sqrt(NP);
     int particlesPerCol = (NP + particlesPerRow - 1) / particlesPerRow; 
 
-    float spacing = pradius * 2 + 5; 
+    float space = pradius * 2 + spacing; 
     int xStart = 320;
     int yStart = 320;
 
@@ -78,8 +79,8 @@ void initParticles() {
         int row = i / particlesPerRow;
         int col = i % particlesPerRow;
 
-        particles[i].x = xStart + col * spacing;
-        particles[i].y = yStart + row * spacing;
+        particles[i].x = xStart + col * space;
+        particles[i].y = yStart + row * space;
         particles[i].radius = pradius;
         particles[i].vx = 0;
         particles[i].vy = 0;
@@ -132,7 +133,7 @@ void render(SDL_Renderer* renderer, struct nk_context *ctx) {
         DrawCircle(renderer, particles[i].x, particles[i].y, particles[i].radius);
     }
 
-    if (nk_begin(ctx, "Simulation Settings", nk_rect(10, 10, 250, 400),
+    if (nk_begin(ctx, "Simulation Settings", nk_rect(10, 10, 250, 600),
         NK_WINDOW_BORDER | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE)) {
         
         nk_layout_row_dynamic(ctx, 30, 1);
@@ -148,6 +149,13 @@ void render(SDL_Renderer* renderer, struct nk_context *ctx) {
         nk_label(ctx, "Balls Num:", NK_TEXT_LEFT);
         nk_slider_int(ctx, 1, &NP, 100, 1);
         if (NP != prev_NP) {
+            initParticles();
+        }
+
+        int prev_spacing = spacing;
+        nk_label(ctx, "Ball Spacing:", NK_TEXT_LEFT);
+        nk_slider_float(ctx, 0.0f, &spacing, 20.0f, 0.1f);
+        if (spacing != prev_spacing) {
             initParticles();
         }
         
